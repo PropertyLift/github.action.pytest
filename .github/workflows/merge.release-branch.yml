@@ -1,0 +1,62 @@
+---
+name: Push workflow for release branches
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build-and-push:
+    name: Bump and Tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Bump and Tag
+        id: bump_and_tag
+        uses: propertylift/action.bump-version-and-tag@v2
+        with:
+          prefix: 'v'
+
+      - name: Move 'latest' tag to current commit ref
+        uses: EndBug/latest-tag@latest
+
+      - name: Move SemVer major & minor tags automatically
+        uses: kellyselden/move-semver-tags-action@v3
+
+      - name: Create changelog text
+        id: changelog
+        uses: loopwerk/tag-changelog@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config_file: .github/tag-changelog-config.js
+
+      - name: Post to a Slack channel
+        id: slack
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL_TECHCICD }}
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*mortar ${{ steps.bump_and_tag.outputs.tag }}* has been released :rocket:"
+                  }
+                }
+              ],
+              "attachments": [
+                {
+                  "color": "#2eb886",
+                  "text": ${{ toJSON(steps.changelog.outputs.changes) }}
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
