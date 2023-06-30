@@ -1,6 +1,57 @@
-name: # the name of the action
-description: # additional descriptive info about the action
+name: Run tests with PyTest
+description: Unit test with PyTest and publish results
+
+inputs:
+  source:
+    description: The directory where the python source code is located, defaults to current directory.
+    required: false
+    default: .
+  configuration:
+    description: File path to the pytest configuration file (.ini).
+    required: false
+    default: ''
+  testFolder:
+    description: The directory where the tests are located (from the source path), if targetting a specific folder
+    required: false
+    default: ''
+  args:
+    description: Additional arguments to pass to pytest.
+    required: false
+    default: ''
+  outputFile:
+    description: The file to write the test results to.
+    required: false
+    default: '${{ github.workspace }}/test-results/results.xml'
+  publish:
+    description: Whether to publish the test results.
+    required: false
+    default: true
+
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-# for additional options, see: https://help.github.com/en/articles/metadata-syntax-for-github-actions
+  using: composite
+  steps:
+    - name: Running PyTest
+      shell: bash -e {0}
+      run: |
+        set -e
+
+        test "${{ inputs.source }}" && cd "${{ inputs.source }}"
+
+        ARGS=${{ inputs.args }}
+
+        if [[ "${{ inputs.configuration }}" ]]; then
+          echo "::debug::Running tests with configuration from ${{ inputs.configuration }}."
+          ARGS="${ARGS} -c \"${{ inputs.configuration }}\""
+        else
+          echo "::debug::Running tests"
+        fi
+
+        pytest ${{ inputs.testFolder }} ${ARGS} \
+          --suppress-no-test-exit-code \
+          --junit-xml="${{ inputs.outputFile }}"
+
+    - name: Publish test results
+      uses: EnricoMi/publish-unit-test-result-action/composite@v1
+      if: ${{ inputs.publish }}
+      with:
+        files: ${{ inputs.outputFile }}

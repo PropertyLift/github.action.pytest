@@ -52,7 +52,7 @@ jobs:
       - name: Notify Slack
         uses: slackapi/slack-github-action@v1
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_TOKEN }}
         with:
           channel-id: ${{ secrets.SLACK_CHANNEL_ID_TECHCICD }}
           payload: |
