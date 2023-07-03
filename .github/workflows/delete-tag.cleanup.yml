@@ -32,7 +32,7 @@ jobs:
         id: vars
         run: |
           TAG_NAME=$(cat ${GITHUB_EVENT_PATH} | jq -r '.ref')
-          echo "tag_name::${TAG_NAME}" >> "$GITHUB_OUTPUT"
+          echo "tag_name=${TAG_NAME}" >> "${GITHUB_OUTPUT}"
 
       - uses: actions/checkout@v1
 
