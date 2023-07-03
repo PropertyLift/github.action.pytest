@@ -39,7 +39,7 @@ jobs:
         id: slack
         uses: slackapi/slack-github-action@v1.23.0
         with:
-          channel-id: ${{ secrets.SLACK_CHANNEL_TECHCICD }}
+          channel-id: ${{ secrets.SLACK_CHANNEL_ID_TECHCICD }}
           payload: |
             {
               "blocks": [
@@ -47,7 +47,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*mortar ${{ steps.bump_and_tag.outputs.tag }}* has been released :rocket:"
+                    "text": "*${{ github.event.repository.name }} ${{ steps.bump_and_tag.outputs.tag }}* has been released :rocket:"
                   }
                 }
               ],
