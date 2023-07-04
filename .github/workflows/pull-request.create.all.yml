@@ -5,9 +5,6 @@ on:
     branches:
       - '*'
 
-env:
-  GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-
 jobs:
   check-pull-request-allowed-to-target-branch:
     name: Check if Pull Request is allowed to the Target Branch
