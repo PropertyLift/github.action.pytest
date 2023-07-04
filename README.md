@@ -37,4 +37,4 @@ with:
 | testFolder     | The directory where the tests are located (from the source path), if targetting a specific folder | No | - |
 | args           | Additional arguments to pass to pytest. | No | - |
 | outputFile     | The file to write the test results to. | No | `test-results/results.xml` |
-| publish        | Whether to publish the test results. | No | false |
+| publish        | Whether to publish the test results. | No | true |

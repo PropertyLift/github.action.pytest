@@ -52,6 +52,6 @@ runs:
 
     - name: Publish test results
       uses: EnricoMi/publish-unit-test-result-action/composite@v1
-      if: ${{ inputs.publish }}
+      if: ${{ inputs.publish == 'true' }}
       with:
         files: ${{ inputs.outputFile }}
