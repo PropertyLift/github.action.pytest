@@ -18,7 +18,7 @@ jobs:
 
       - name: Bump and Tag
         id: bump_and_tag
-        uses: propertylift/action.bump-version-and-tag@v2
+        uses: propertylift/action.bump-version-and-tag@v3
         with:
           prefix: 'v'
 
