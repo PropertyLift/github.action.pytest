@@ -35,24 +35,20 @@ runs:
       shell: bash -e {0}
       run: |
         set -e
-
         test "${{ inputs.source }}" && cd "${{ inputs.source }}"
-
         ARGS=${{ inputs.args }}
-
         if [[ "${{ inputs.configuration }}" ]]; then
           echo "::debug::Running tests with configuration from ${{ inputs.configuration }}."
           ARGS="${ARGS} -c \"${{ inputs.configuration }}\""
         else
           echo "::debug::Running tests"
         fi
-
         pytest ${{ inputs.testFolder }} ${ARGS} \
           --suppress-no-test-exit-code \
           --junit-xml="${{ inputs.outputFile }}"
 
     - name: Publish test results
-      uses: EnricoMi/publish-unit-test-result-action/composite@v1
+      uses: EnricoMi/publish-unit-test-result-action/composite@v2
       if: ${{ inputs.publish == 'true' }}
       with:
         files: ${{ inputs.outputFile }}
