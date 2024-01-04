@@ -35,6 +35,7 @@ runs:
   using: composite
   steps:
     - name: Configure GitHub credentials
+      shell: bash
       run: git config --global url."https://${{ env.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
 
     - name: Check out source repository
@@ -59,15 +60,17 @@ runs:
         key: poetry.lock-build-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Install dependencies from the cache
+      shell: bash
       if: steps.cached-poetry-dependencies.outputs.cache-hit == 'true'
       run: poetry install --no-interaction --with dev,testing
 
     - name: Install dependencies from Internet
+      shell: bash
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
       run: poetry install --no-interaction --with dev,testing --no-cache
 
     - name: Running PyTest
-      shell: bash -e {0}
+      shell: bash
       run: |
         set -e
         test "${{ inputs.source }}" && cd "${{ inputs.source }}"
