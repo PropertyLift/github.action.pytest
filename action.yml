@@ -26,9 +26,13 @@ inputs:
     description: Whether to publish the test results.
     required: false
     default: true
+  githubToken:
+    description: The GitHub token to use for checkouting and publishing the test results.
+    required: true
+    default: ''
   pythonVersion:
     description: The python version to use.
-    required: true
+    required: false
     default: '3.9'
 
 runs:
