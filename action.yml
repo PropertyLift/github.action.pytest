@@ -26,13 +26,55 @@ inputs:
     description: Whether to publish the test results.
     required: false
     default: true
+  githubToken:
+    description: The GitHub token to use for checkouting and publishing the test results.
+    required: true
+    default: ''
+  pythonVersion:
+    description: The python version to use.
+    required: false
+    default: '3.9'
 
 runs:
   using: composite
   steps:
+    - name: Configure GitHub credentials
+      shell: bash
+      run: git config --global url."https://${{ env.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
+    - name: Check out source repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python environment
+      uses: actions/setup-python@v5
+      id: setup-python
+      with:
+        python-version: "${{ inputs.pythonVersion }}"
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: false
+
+    - name: Cache Poetry dependencies
+      id: cached-poetry-dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pypoetry
+        key: poetry.lock-build-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies from the cache
+      shell: bash
+      if: steps.cached-poetry-dependencies.outputs.cache-hit == 'true'
+      run: poetry install --no-interaction --with dev,testing
+
+    - name: Install dependencies from Internet
+      shell: bash
+      if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+      run: poetry install --no-interaction --with dev,testing --no-cache
 
     - name: Running PyTest
-      shell: bash -e {0}
+      shell: bash
       run: |
         set -e
         test "${{ inputs.source }}" && cd "${{ inputs.source }}"
