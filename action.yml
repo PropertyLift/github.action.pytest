@@ -66,12 +66,12 @@ runs:
     - name: Install dependencies from the cache
       shell: bash
       if: steps.cached-poetry-dependencies.outputs.cache-hit == 'true'
-      run: poetry install --no-interaction --with dev,testing
+      run: poetry install --no-interaction --with dev,test
 
     - name: Install dependencies from Internet
       shell: bash
       if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-      run: poetry install --no-interaction --with dev,testing --no-cache
+      run: poetry install --no-interaction --with dev,test --no-cache
 
     - name: Running PyTest
       shell: bash
